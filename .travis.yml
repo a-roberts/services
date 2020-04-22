@@ -1,5 +1,5 @@
-language: go
-go: 1.13
+cllanguage: go
+go: 1.14
 sudo: false
 
 before_install:
@@ -8,6 +8,7 @@ before_install:
 script:
   - $GOPATH/bin/golangci-lint run
   - go test ./...
+  - go build ./cmd/services
 
 deploy:
   provider: releases
