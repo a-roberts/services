@@ -1,5 +1,7 @@
 # Tekton Pipeline/Task Example  
 
+This example requires a Tekton Pipelines Beta installation (version 0.11.x or higher).
+
 A small example of using `promote` in a Tekton Pipeline to promote a service's config to a GitOps repository.  Creation of the
 PipelineRun (using `service-promote-pipeline-run.yaml`) will drive the pipeline to clone, build and push the service and then promote the config from the local clone into your staging/test GitOps repository.
 
@@ -9,7 +11,7 @@ staging to production.
 ## Template Files
 
 - `auth.yaml`: Creates secrets for GitHub and Docker registry and Create the ServiceAccount
-- `gitconfig`: Data file for the configmap
+- `gitconfig`: Data file for the configmap  
 - `promote-secret.yaml`: Creates an access token secret for the GitHub repository
 - `resources.yaml`: Creates PipelineResources for GitHub and Docker repositories
 - `promote.yaml`: Creates a pull request from one repository to another repository

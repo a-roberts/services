@@ -1,35 +1,34 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: build-push
 spec:
   workspaces:
   - name: repo
-  inputs:
-    resources:
+  resources:
+    inputs:
       - name: git-source
         type: git
-    params:
-    - name: pathToDockerFile
-      description: The path to the dockerfile to build
-      default: ./repo/Dockerfile
-    - name: commitId
-      description: commit ID of the source
-      default: v2
-    - name: pathToContext
-      description: The build context used by Kaniko (https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts)
-      default: ./repo
-  outputs:
-    resources:
+    outputs:
       - name: builtImage
         type: image
+  params:
+  - name: pathToDockerFile
+    description: The path to the dockerfile to build
+    default: ./repo/Dockerfile
+  - name: commitId
+    description: commit ID of the source
+    default: v2
+  - name: pathToContext
+    description: The build context used by Kaniko (https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts)
+    default: ./repo
   steps:
   - name: build
     image: docker
     script: |
       #!/bin/sh
       cp -R git-source/. repo
-      docker build -f $(inputs.params.pathToDockerFile) -t $(outputs.resources.builtImage.url) $(inputs.params.pathToContext)
+      docker build -f $(params.pathToDockerFile) -t $(resources.outputs.builtImage.url) $(params.pathToContext)
     volumeMounts:
     - name: docker-socket
       mountPath: /var/run/docker.sock
@@ -37,8 +36,8 @@ spec:
     image: docker
     script: |
       #!/bin/sh
-      docker tag $(outputs.resources.builtImage.url) $(outputs.resources.builtImage.url):$(inputs.params.commitId)
-      docker push $(outputs.resources.builtImage.url):$(inputs.params.commitId)
+      docker tag $(resources.outputs.builtImage.url) $(resources.outputs.builtImage.url):$(params.commitId)
+      docker push $(resources.outputs.builtImage.url):$(params.commitId)
     volumeMounts:
     - name: docker-socket
       mountPath: /var/run/docker.sock
@@ -46,7 +45,7 @@ spec:
     image: alpine
     script: |
       #!/bin/sh
-      sed -i -e "s#\$IMAGE#\$(outputs.resources.builtImage.url):\$(inputs.params.commitId)#" $(inputs.params.pathToContext)/config/deploy.yaml
+      sed -i -e "s#\$IMAGE#\$(resources.outputs.builtImage.url):\$(params.commitId)#" $(params.pathToContext)/config/deploy.yaml
   volumes:
     - name: docker-socket
       hostPath:

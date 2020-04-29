@@ -1,5 +1,6 @@
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
+# Todo replace with Git Task
 metadata:
   name: git-app-repo
 spec:
@@ -14,6 +15,7 @@ spec:
 ---
 
 apiVersion: tekton.dev/v1alpha1
+# Todo replace with Buildah Catalog task, remove reliance on Docker socket
 kind: PipelineResource
 metadata:
   name: docker-app-image
